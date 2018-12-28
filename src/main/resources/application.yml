@@ -1,0 +1,53 @@
+server:
+  port: 8888
+
+spring:
+  datasource:
+      name: kobe
+      url: jdbc:mysql://47.99.243.252:3306/test?useUnicode=true&characterEncoding=UTF8
+      username: root
+      password: Aimai-910611
+      # 使用druid数据源
+      type: com.alibaba.druid.pool.DruidDataSource
+      driver-class-name: com.mysql.jdbc.Driver
+
+  elasticjob:
+    #注册中心配置
+    zookeeper:
+      server-lists: 47.99.243.252:2280,47.99.243.252:2281,47.99.243.252:2282
+      namespace: elastic-job-spring-boot
+    #简单作业配置
+    simples:
+      #简单作业示例配置
+      mySimpleJob: #作业名称
+        #配置简单作业，必须实现com.dangdang.ddframe.job.api.simple.SimpleJob
+        job-class: com.elastic.job.MySimpleJob
+        cron: 0/10 * * * * ?
+        sharding-total-count: 3
+        sharding-item-parameters: 0=Beijing,1=Shanghai,2=Guangzhou
+        #事件追踪的数据源Bean引用
+        event-trace-rdb-data-source: dataSource
+#        #配置监听器
+#        listener:
+#          #配置每台作业节点均执行的监听，必须实现com.dangdang.ddframe.job.lite.api.listener.ElasticJobListener
+#          #如：处理完文件后删除文件  请尽量使用此类型监听器
+#          listener-class: com.elastic.listener.MyElasticJobListener
+
+    #流式作业配置
+    dataflows:
+      #流式作业示例配置
+      myDataflowJob: #作业名称
+        #配置简单作业，必须实现com.dangdang.ddframe.job.api.dataflow.DataflowJob<T>
+        job-class: com.elastic.job.MyDataflowJob
+        cron: 0/20 * * * * ?
+        sharding-total-count: 3
+        sharding-item-parameters: 0=Beijing,1=Shanghai,2=Guangzhou
+        streaming-process: false
+#        #配置监听器
+#        listener:
+#          #配置分布式场景中仅单一节点执行的监听，必须实现com.dangdang.ddframe.job.lite.api.listener.AbstractDistributeOnceElasticJobListener
+#          #此类型任务处理复杂，需保证分布式环境下作业的状态同步，请谨慎使用
+#          distributed-listener-class: com.elastic.listener.MyDistributeElasticJobListener
+#          started-timeout-milliseconds: 5000
+#          completed-timeout-milliseconds: 10000
+
